@@ -286,7 +286,7 @@ function App() {
               variants={fadeUp}
             >
               <p className="eyebrow">Expertise</p>
-              <h2>Frontend, backend, and the measurement layer.</h2>
+              <h2>Full stack, DevOps, and growth measurement.</h2>
             </motion.div>
 
             <div className="skills-grid">

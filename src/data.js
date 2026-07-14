@@ -17,7 +17,7 @@ export const about = {
   },
   paragraphs: [
     "I'm a Full Stack Developer at Possessive Panda, where I ship production features across the stack — React frontends, Node backends, and the growth layer that connects them to real users.",
-    "Beyond code, I own pixel tracking, GA4 analytics, and Google Ads Sense setups so product decisions are grounded in data, not guesses.",
+    "Beyond code, I own pixel tracking, GA4 analytics, and Google Ads Sense setups so product decisions are grounded in data, not guesses. I also work with AWS EC2 deployments, GitHub workflows, Tailwind CSS, and have a basic grounding in app development.",
   ],
 };
 
@@ -95,11 +95,15 @@ export const projects = [
 export const skills = [
   {
     title: "Frontend",
-    items: ["React", "Responsive UI", "Component systems", "Accessibility-minded layouts"],
+    items: ["React", "Tailwind CSS", "Responsive UI", "Component systems"],
   },
   {
     title: "Backend",
     items: ["Node.js", "REST APIs", "Auth & roles", "Database-backed features"],
+  },
+  {
+    title: "DevOps & Tools",
+    items: ["AWS EC2", "GitHub", "Deployments", "Basic app development"],
   },
   {
     title: "Growth & Analytics",
