@@ -6,6 +6,8 @@ export const profile = {
     "I design, build, and grow web products end to end — from pixel-perfect UI to APIs, analytics, and ads.",
   email: "prachikr585@gmail.com",
   phone: "6206786331",
+  github: "https://github.com/prachicodehub",
+  linkedin: "https://www.linkedin.com/in/prachi259",
 };
 
 export const about = {

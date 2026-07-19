@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { motion, useScroll, useSpring } from "framer-motion";
 import { about, profile, projects, skills } from "./data";
+import Avatar3D from "./Avatar3D";
 import portrait from "./assets/prachi.jpg";
+import avatar3d from "./assets/prachi-3d-avatar.png";
 import "./App.css";
 
 const fadeUp = {
@@ -119,22 +121,35 @@ function App() {
                 Get in touch
               </a>
             </motion.div>
+
+            <motion.div
+              className="social-row"
+              variants={fadeUp}
+              initial="hidden"
+              animate="show"
+              custom={4}
+            >
+              <a
+                href={profile.github}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                GitHub
+              </a>
+              <a
+                href={profile.linkedin}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                LinkedIn
+              </a>
+            </motion.div>
           </div>
 
-          <motion.div
-            className="hero-mark"
-            aria-hidden="true"
-            initial={{ opacity: 0, scale: 0.92 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
-          >
-            <span className="hero-mark-label">Building</span>
-            <ul className="hero-mark-list">
-              <li>Products</li>
-              <li>Platforms</li>
-              <li>Growth stacks</li>
-            </ul>
-          </motion.div>
+          <Avatar3D
+            src={avatar3d}
+            alt={`${profile.name} 3D avatar`}
+          />
         </section>
 
         <section id="about" className="section about">
@@ -333,6 +348,22 @@ function App() {
                 <a className="btn btn-ghost" href={`tel:+91${profile.phone}`}>
                   +91 {profile.phone}
                 </a>
+                <a
+                  className="btn btn-ghost"
+                  href={profile.github}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  GitHub
+                </a>
+                <a
+                  className="btn btn-ghost"
+                  href={profile.linkedin}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  LinkedIn
+                </a>
               </div>
             </motion.div>
           </div>
@@ -343,9 +374,14 @@ function App() {
         <p>
           © {new Date().getFullYear()} {profile.name}
         </p>
-        <p>
-          {profile.role} at {profile.company}
-        </p>
+        <div className="footer-social">
+          <a href={profile.github} target="_blank" rel="noopener noreferrer">
+            GitHub
+          </a>
+          <a href={profile.linkedin} target="_blank" rel="noopener noreferrer">
+            LinkedIn
+          </a>
+        </div>
       </footer>
     </div>
   );
