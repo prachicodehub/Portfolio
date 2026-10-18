@@ -54,6 +54,7 @@ export const projects = [
     name: "ERP Management System",
     type: "Enterprise · Operations",
     accent: "#7c9cff",
+    url: "https://erp.khushpehno.com/",
     featured: true,
     summary:
       "A full-fledged ERP for records, inventory, notifications, catalog syncing, and order management in one place.",
@@ -68,6 +69,7 @@ export const projects = [
     id: "khush-studios",
     name: "Khush Studios",
     type: "Brand · Creative Studio",
+    url: "https://khushstudios.com/",
     accent: "#f472b6",
     featured: true,
     summary:
