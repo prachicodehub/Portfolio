@@ -49,7 +49,9 @@ export default function Avatar3D({ src, alt }) {
           <img src={src} alt={alt} draggable="false" />
         </div>
       </div>
-      <p className="avatar-3d-caption">Prachi · Full Stack</p>
+      <p className="avatar-3d-caption">
+        <span className="status-dot" /> Open to new projects
+      </p>
     </motion.div>
   );
 }
