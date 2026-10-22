@@ -39,6 +39,7 @@ export const projects = [
     name: "Mealji",
     type: "Food-tech · Ordering",
     accent: "#ff8a4c",
+    url: "https://mealji.in/",
     featured: true,
     summary:
       "A food ordering platform for browsing menus, placing orders, and tracking meals from kitchen to doorstep.",
