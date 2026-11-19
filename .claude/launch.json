@@ -6,6 +6,36 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev", "--", "--port", "5173"],
       "port": 5173
+    },
+    {
+      "name": "khush-web",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "C:/Users/dell/kushWeb", "run", "dev", "--", "--port", "5180"],
+      "port": 5180
+    },
+    {
+      "name": "todo-api",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "--prefix", "C:/Users/dell/Desktop/Digiceal assignement/server"],
+      "port": 5000
+    },
+    {
+      "name": "todo-web",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "--prefix", "C:/Users/dell/Desktop/Digiceal assignement/client"],
+      "port": 5173
+    },
+    {
+      "name": "taskflow-api",
+      "runtimeExecutable": "C:/Users/dell/Desktop/springboot assignment/TaskFlow/backend/gradlew.bat",
+      "runtimeArgs": ["-p", "C:/Users/dell/Desktop/springboot assignment/TaskFlow/backend", "bootRun", "--console=plain", "--args=--spring.profiles.active=h2"],
+      "port": 8080
+    },
+    {
+      "name": "taskflow-web",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "C:/Users/dell/Desktop/springboot assignment/TaskFlow/frontend", "run", "dev", "--", "--port", "5174"],
+      "port": 5174
     }
   ]
 }

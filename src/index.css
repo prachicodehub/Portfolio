@@ -1,21 +1,107 @@
+/*
+ * Theme: follows the system setting; the nav toggle pins one by setting
+ * <html data-theme="light|dark"> (saved in localStorage, applied in index.html
+ * before paint).
+ */
 :root {
-  --bg: #09090b;
-  --bg-alt: #0e0e12;
-  --surface: #131318;
-  --surface-2: #1a1a21;
-  --border: rgba(255, 255, 255, 0.08);
-  --border-strong: rgba(255, 255, 255, 0.14);
-  --text: #f4f4f5;
-  --text-soft: #c4c4cc;
-  --muted: #8b8b96;
-  --brand: #8b9dff;
-  --brand-2: #c084fc;
-  --success: #34d399;
-  --gradient: linear-gradient(120deg, var(--brand), var(--brand-2));
-  --font-body: "Geist", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-serif: "Instrument Serif", Georgia, serif;
+  /* Palette — light */
+  --paper: #ffffff;
+  --mist: #f2f3f5;
+  --ink: #16181d;
+  --slate: #5a606c;
+  --line: #e2e4e8;
+  --rule: #d9dce1;
+  --signal: #2f4fd8;
+  --live: #18a058;
+  --surface: #ffffff;
+  --dot: #cfd2d8;
+  --nav-bg: rgba(255, 255, 255, 0.86);
+  --glass: rgba(255, 255, 255, 0.9);
+  --btn-bg: #16181d;
+  --btn-fg: #ffffff;
+  --btn-bg-hover: #2b2f38;
+  --bezel: #16181d;
+  --inverse-bg: #16181d;
+  --inverse-text: #ffffff;
+  --inverse-muted: #b5bac4;
+  --inverse-dim: #8e94a0;
+  --inverse-line: rgba(255, 255, 255, 0.16);
+  --shadow-frame: 0 1px 2px rgba(22, 24, 29, 0.06),
+    0 24px 48px -24px rgba(22, 24, 29, 0.28);
+  --shadow-phone: 0 30px 50px -20px rgba(22, 24, 29, 0.45);
+  --shot-filter: none;
+
+  /* Type: one family, set on a 1.25 scale */
+  --font: "Schibsted Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --step--1: 0.875rem;
+  --step-0: 1rem;
+  --step-1: 1.25rem;
+  --step-2: 1.5625rem;
+  --step-3: clamp(1.75rem, 1.4rem + 1.4vw, 2.4rem);
+  --step-4: clamp(2.4rem, 1.6rem + 3.4vw, 4.5rem);
+
+  --gutter: clamp(1rem, 0.6rem + 2vw, 2.5rem);
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
-  --radius: 20px;
+  color-scheme: light;
+}
+
+/* Palette — dark. Same tokens in both blocks: system preference, or pinned. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0f1115;
+    --mist: #161920;
+    --ink: #eceef2;
+    --slate: #9aa1ad;
+    --line: #262a33;
+    --rule: #2c303a;
+    --signal: #8fa3ff;
+    --live: #34d27b;
+    --surface: #1b1e25;
+    --dot: #3a3f4a;
+    --nav-bg: rgba(15, 17, 21, 0.82);
+    --glass: rgba(15, 17, 21, 0.78);
+    --btn-bg: #eceef2;
+    --btn-fg: #0f1115;
+    --btn-bg-hover: #ffffff;
+    --bezel: #000000;
+    --inverse-bg: #1a1d24;
+    --inverse-text: #eceef2;
+    --inverse-muted: #a4abb7;
+    --inverse-dim: #7d8490;
+    --inverse-line: rgba(255, 255, 255, 0.1);
+    --shadow-frame: 0 1px 2px rgba(0, 0, 0, 0.4),
+      0 24px 48px -24px rgba(0, 0, 0, 0.7);
+    --shadow-phone: 0 30px 50px -20px rgba(0, 0, 0, 0.75);
+    --shot-filter: brightness(0.88);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0f1115;
+  --mist: #161920;
+  --ink: #eceef2;
+  --slate: #9aa1ad;
+  --line: #262a33;
+  --rule: #2c303a;
+  --signal: #8fa3ff;
+  --live: #34d27b;
+  --surface: #1b1e25;
+  --dot: #3a3f4a;
+  --nav-bg: rgba(15, 17, 21, 0.82);
+  --glass: rgba(15, 17, 21, 0.78);
+  --btn-bg: #eceef2;
+  --btn-fg: #0f1115;
+  --btn-bg-hover: #ffffff;
+  --bezel: #000000;
+  --inverse-bg: #1a1d24;
+  --inverse-text: #eceef2;
+  --inverse-muted: #a4abb7;
+  --inverse-dim: #7d8490;
+  --inverse-line: rgba(255, 255, 255, 0.1);
+  --shadow-frame: 0 1px 2px rgba(0, 0, 0, 0.4),
+    0 24px 48px -24px rgba(0, 0, 0, 0.7);
+  --shadow-phone: 0 30px 50px -20px rgba(0, 0, 0, 0.75);
+  --shot-filter: brightness(0.88);
   color-scheme: dark;
 }
 
@@ -29,15 +115,17 @@
 
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 5rem;
+  scroll-padding-top: 4.5rem;
 }
 
 body {
-  font-family: var(--font-body);
-  background: var(--bg);
-  color: var(--text);
+  font-family: var(--font);
+  font-size: var(--step-0);
+  background: var(--paper);
+  color: var(--ink);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
   overflow-x: hidden;
 }
 
@@ -48,6 +136,7 @@ a {
 
 img {
   max-width: 100%;
+  height: auto;
   display: block;
 }
 
@@ -65,14 +154,14 @@ button {
 }
 
 ::selection {
-  background: var(--brand);
-  color: var(--bg);
+  background: var(--signal);
+  color: var(--paper);
 }
 
 :focus-visible {
-  outline: 2px solid var(--brand);
+  outline: 2px solid var(--signal);
   outline-offset: 3px;
-  border-radius: 6px;
+  border-radius: 4px;
 }
 
 @media (prefers-reduced-motion: reduce) {

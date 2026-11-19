@@ -1,3 +1,12 @@
+import mealjiShot from "./assets/work/mealji.webp";
+import erpShot from "./assets/work/erp.webp";
+import studiosShot from "./assets/work/khush-studios.webp";
+import khushShot from "./assets/work/khush.webp";
+import khushMobile from "./assets/work/khush-mobile.webp";
+import adminShot from "./assets/work/khush-admin.webp";
+import vibgyorShot from "./assets/work/vibgyor.webp";
+import vibgyorMobile from "./assets/work/vibgyor-mobile.webp";
+
 export const profile = {
   name: "Prachi Kumari",
   firstName: "Prachi",
@@ -9,7 +18,7 @@ export const profile = {
   email: "prachikr585@gmail.com",
   phone: "6206786331",
   github: "https://github.com/prachicodehub",
-  linkedin: "https://www.linkedin.com/in/prachi259",
+  linkedin: "https://www.linkedin.com/in/prachi-kumari-485839437/",
 };
 
 export const stats = [
@@ -32,14 +41,35 @@ export const about = {
   ],
 };
 
-// `accent` drives each project card's colour treatment.
+// `accent` tints small details per project. `image` / `mobile` are real
+// screenshots of the live sites (1440×900 desktop, 390×844 phone).
+// `featured` projects get a full case-study row; the rest a compact card.
 export const projects = [
+  {
+    id: "khush",
+    name: "Khush Clothing",
+    type: "E-commerce · Fashion",
+    accent: "#facc15",
+    url: "https://khushpehno.com/",
+    image: khushShot,
+    mobile: khushMobile,
+    featured: true,
+    summary:
+      "A full clothing e-commerce website for browsing collections, buying apparel, and managing the shopper journey end to end.",
+    details: [
+      "Storefront for catalogs, categories, and product detail pages",
+      "Cart, checkout, and order flows tailored for fashion retail",
+      "Responsive shopping experience with conversion tracking hooks",
+    ],
+    stack: ["React", "Node.js", "REST APIs", "GA4"],
+  },
   {
     id: "mealji",
     name: "Mealji",
     type: "Food-tech · Ordering",
     accent: "#ff8a4c",
     url: "https://mealji.in/",
+    image: mealjiShot,
     featured: true,
     summary:
       "A food ordering platform for browsing menus, placing orders, and tracking meals from kitchen to doorstep.",
@@ -51,11 +81,30 @@ export const projects = [
     stack: ["React", "Node.js", "REST APIs", "GA4"],
   },
   {
+    id: "vibgyor",
+    name: "Vibgyor",
+    type: "Dating · Social",
+    accent: "#a78bfa",
+    url: "https://vibgyor.love/",
+    image: vibgyorShot,
+    mobile: vibgyorMobile,
+    featured: true,
+    summary:
+      "India's free LGBTQAI+ dating and social app — matching, feeds, chat, and community, built bilingual for Hindi and English.",
+    details: [
+      "Dating + social feed in one product for the queer community",
+      "Privacy-first profiles, safe chat, and report/block tools",
+      "Full-stack work spanning product UI, APIs, and growth measurement",
+    ],
+    stack: ["React", "Node.js", "Realtime", "APIs"],
+  },
+  {
     id: "erp",
     name: "ERP Management System",
     type: "Enterprise · Operations",
     accent: "#7c9cff",
     url: "https://erp.khushpehno.com/",
+    image: erpShot,
     featured: true,
     summary:
       "A full-fledged ERP for records, inventory, notifications, catalog syncing, and order management in one place.",
@@ -71,8 +120,8 @@ export const projects = [
     name: "Khush Studios",
     type: "Brand · Creative Studio",
     url: "https://khushstudios.com/",
+    image: studiosShot,
     accent: "#f472b6",
-    featured: true,
     summary:
       "The studio website for the Khush brand — showcasing collections, campaigns, and creative work with a clean, editorial feel.",
     details: [
@@ -83,26 +132,12 @@ export const projects = [
     stack: ["React", "Tailwind CSS", "Node.js", "SEO"],
   },
   {
-    id: "khush",
-    name: "Khush Clothing",
-    type: "E-commerce · Fashion",
-    accent: "#facc15",
-    url: "https://khushpehno.com/",
-    summary:
-      "A full clothing e-commerce website for browsing collections, buying apparel, and managing the shopper journey end to end.",
-    details: [
-      "Storefront for catalogs, categories, and product detail pages",
-      "Cart, checkout, and order flows tailored for fashion retail",
-      "Responsive shopping experience with conversion tracking hooks",
-    ],
-    stack: ["React", "Node.js", "REST APIs", "GA4"],
-  },
-  {
     id: "khush-admin",
     name: "Khush Admin Panel",
     type: "Dashboard · Ops",
     accent: "#34d399",
     url: "https://admin.khushpehno.com/",
+    image: adminShot,
     summary:
       "An internal control center for running the Khush clothing store — products, users, and day-to-day operations.",
     details: [
@@ -111,21 +146,6 @@ export const projects = [
       "Clear data tables and filters for fast decision-making",
     ],
     stack: ["React", "Node.js", "Auth", "REST APIs"],
-  },
-  {
-    id: "vibgyor",
-    name: "Vibgyor",
-    type: "Dating · Social",
-    accent: "#a78bfa",
-    url: "https://vibgyor.love/",
-    summary:
-      "India's free LGBTQAI+ dating and social app — matching, feeds, chat, and community, built bilingual for Hindi and English.",
-    details: [
-      "Dating + social feed in one product for the queer community",
-      "Privacy-first profiles, safe chat, and report/block tools",
-      "Full-stack work spanning product UI, APIs, and growth measurement",
-    ],
-    stack: ["React", "Node.js", "Realtime", "APIs"],
   },
 ];
 

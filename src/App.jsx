@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { motion, useScroll, useSpring } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import {
   about,
   experience,
@@ -8,40 +8,27 @@ import {
   skills,
   stats,
 } from "./data";
-import Avatar3D from "./Avatar3D";
-import ProjectVisual from "./ProjectVisual";
-import portrait from "./assets/prachi.jpg";
-import avatar3d from "./assets/prachi-3d-avatar.png";
+import portrait from "./assets/prachi-portrait.webp";
 import "./App.css";
 
 const ease = [0.22, 1, 0.36, 1];
-
-const fadeUp = {
-  hidden: { opacity: 0, y: 24 },
-  show: (i = 0) => ({
-    opacity: 1,
-    y: 0,
-    transition: { delay: i * 0.07, duration: 0.7, ease },
-  }),
-};
-
-const reveal = {
-  initial: "hidden",
-  whileInView: "show",
-  viewport: { once: true, amount: 0.25 },
-  variants: fadeUp,
-};
 
 const navLinks = [
   { href: "#work", label: "Work" },
   { href: "#about", label: "About" },
   { href: "#experience", label: "Experience" },
-  { href: "#skills", label: "Skills" },
+  { href: "#contact", label: "Contact" },
 ];
 
 function Icon({ name }) {
   const paths = {
-    arrow: <path d="M7 17 17 7M8 7h9v9" />,
+    external: (
+      <>
+        <path d="M14 4h6v6" />
+        <path d="M20 4 11 13" />
+        <path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" />
+      </>
+    ),
     github: (
       <path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.2 4.2 0 0 0-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3 0 0 0-6.2 0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2 0 0 0-.1 3.2A4.6 4.6 0 0 0 4 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21" />
     ),
@@ -58,6 +45,13 @@ function Icon({ name }) {
         <path d="m22 7-10 6L2 7" />
       </>
     ),
+    sun: (
+      <>
+        <circle cx="12" cy="12" r="4" />
+        <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
+      </>
+    ),
+    moon: <path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5a8.5 8.5 0 1 0 11 11z" />,
     phone: (
       <path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z" />
     ),
@@ -78,71 +72,180 @@ function Icon({ name }) {
   );
 }
 
-function ProjectCard({ project, index, large }) {
+const DARK_QUERY = "(prefers-color-scheme: dark)";
+
+function readSavedTheme() {
+  try {
+    const t = localStorage.getItem("theme");
+    return t === "light" || t === "dark" ? t : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Light/dark theme: system preference until the visitor picks one with the toggle. */
+function useTheme() {
+  const [saved, setSaved] = useState(readSavedTheme);
+  const [systemDark, setSystemDark] = useState(
+    () => window.matchMedia?.(DARK_QUERY).matches ?? false,
+  );
+
+  useEffect(() => {
+    const mq = window.matchMedia?.(DARK_QUERY);
+    if (!mq) return undefined;
+    const sync = () => setSystemDark(mq.matches);
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
+
+  const theme = saved ?? (systemDark ? "dark" : "light");
+
+  const toggle = () => {
+    const next = theme === "dark" ? "light" : "dark";
+    setSaved(next);
+    document.documentElement.dataset.theme = next;
+    try {
+      localStorage.setItem("theme", next);
+    } catch {
+      // Storage blocked (private mode): the choice lasts for this visit only.
+    }
+  };
+
+  return { theme, toggle };
+}
+
+function ThemeToggle({ theme, onToggle }) {
+  const isDark = theme === "dark";
   return (
-    <motion.article
-      className={`project-card ${large ? "is-large" : ""}`}
-      style={{ "--accent": project.accent }}
-      {...reveal}
-      custom={index}
+    <button
+      type="button"
+      className="theme-toggle"
+      onClick={onToggle}
+      aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+      title={isDark ? "Light mode" : "Dark mode"}
     >
-      <ProjectVisual id={project.id} />
-      <div className="project-body">
-        <div className="project-meta">
-          <span className="project-type">{project.type}</span>
-          {project.url ? (
-            <span className="project-status is-live">Live</span>
-          ) : (
-            <span className="project-status">Private build</span>
-          )}
-        </div>
-        <h3>{project.name}</h3>
-        <p className="project-summary">{project.summary}</p>
-        {large && (
-          <ul className="project-points">
-            {project.details.map((item) => (
-              <li key={item}>{item}</li>
-            ))}
-          </ul>
-        )}
-        <div className="project-footer">
-          <div className="tags">
-            {project.stack.map((tech) => (
-              <span key={tech}>{tech}</span>
-            ))}
-          </div>
-          {project.url && (
-            <a
-              className="project-link"
-              href={project.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={`Visit ${project.name}`}
-            >
-              Visit <Icon name="arrow" />
-            </a>
-          )}
-        </div>
-      </div>
-    </motion.article>
+      <Icon name={isDark ? "sun" : "moon"} />
+    </button>
   );
 }
 
-function SectionHeading({ eyebrow, title, children }) {
+function domainOf(url) {
+  try {
+    return new URL(url).hostname.replace(/^www\./, "");
+  } catch {
+    return url;
+  }
+}
+
+/** Real screenshot of the live site in a quiet browser frame (+ optional phone). */
+function Screens({ project, priority = false }) {
   return (
-    <motion.div className="section-heading" {...reveal}>
-      <p className="eyebrow">{eyebrow}</p>
-      <h2>{title}</h2>
-      {children && <p className="section-lede">{children}</p>}
-    </motion.div>
+    <div className={`screens ${project.mobile ? "has-phone" : ""}`}>
+      <figure className="browser">
+        <div className="browser-bar" aria-hidden="true">
+          <span className="browser-dots">
+            <i />
+            <i />
+            <i />
+          </span>
+          <span className="browser-url">{domainOf(project.url)}</span>
+        </div>
+        <img
+          src={project.image}
+          alt={`${project.name} home page, desktop`}
+          width="1440"
+          height="900"
+          loading={priority ? "eager" : "lazy"}
+          decoding="async"
+        />
+      </figure>
+      {project.mobile && (
+        <figure className="phone">
+          <img
+            src={project.mobile}
+            alt={`${project.name} on a phone`}
+            width="390"
+            height="844"
+            loading="lazy"
+            decoding="async"
+          />
+        </figure>
+      )}
+    </div>
+  );
+}
+
+function CaseStudy({ project, index }) {
+  return (
+    <article
+      className={`case ${index % 2 ? "is-flipped" : ""}`}
+      style={{ "--accent": project.accent }}
+    >
+      <div className="case-text">
+        <p className="case-type">{project.type}</p>
+        <h3>{project.name}</h3>
+        <p className="case-summary">{project.summary}</p>
+        <h4>What I built</h4>
+        <ul className="case-points">
+          {project.details.map((item) => (
+            <li key={item}>{item}</li>
+          ))}
+        </ul>
+        <p className="case-stack">
+          <span className="sr-only">Built with </span>
+          {project.stack.join(", ")}
+        </p>
+        <a
+          className="text-link"
+          href={project.url}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Visit {domainOf(project.url)} <Icon name="external" />
+        </a>
+      </div>
+      <Screens project={project} priority={index === 0} />
+    </article>
+  );
+}
+
+function ProjectCard({ project }) {
+  return (
+    <article className="card" style={{ "--accent": project.accent }}>
+      <a
+        className="card-link"
+        href={project.url}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <div className="card-shot">
+          <img
+            src={project.image}
+            alt={`${project.name} home page`}
+            width="1440"
+            height="900"
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
+        <div className="card-body">
+          <h3>
+            {project.name} <Icon name="external" />
+          </h3>
+          <p className="card-type">{project.type}</p>
+          <p>{project.summary}</p>
+          <p className="case-stack">{project.stack.join(", ")}</p>
+        </div>
+      </a>
+    </article>
   );
 }
 
 function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const { scrollYProgress } = useScroll();
-  const scaleX = useSpring(scrollYProgress, { stiffness: 120, damping: 30 });
+  const reduceMotion = useReducedMotion();
+  const { theme, toggle: toggleTheme } = useTheme();
 
   const featured = projects.filter((p) => p.featured);
   const more = projects.filter((p) => !p.featured);
@@ -155,23 +258,38 @@ function App() {
   }, [menuOpen]);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24);
+    const onScroll = () => setScrolled(window.scrollY > 8);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // One orchestrated entrance for the hero; everything else is static.
+  const enter = (i) =>
+    reduceMotion
+      ? {}
+      : {
+          initial: { opacity: 0, y: 18 },
+          animate: { opacity: 1, y: 0 },
+          transition: { duration: 0.7, ease, delay: 0.08 * i },
+        };
+
   return (
     <div className="site">
-      <motion.div className="scroll-progress" style={{ scaleX }} />
+      <a className="skip-link" href="#work">
+        Skip to work
+      </a>
 
       <header className={`nav ${scrolled ? "is-scrolled" : ""}`}>
-        <div className="nav-inner">
-          <a className="nav-brand" href="#top" aria-label="Home">
-            <span className="nav-logo">PK</span>
-            <span className="nav-name">{profile.name}</span>
+        <div className="container nav-inner">
+          <a className="nav-brand" href="#top">
+            {profile.name}
           </a>
-          <nav className={`nav-links ${menuOpen ? "is-open" : ""}`}>
+          <nav
+            id="site-menu"
+            className={`nav-links ${menuOpen ? "is-open" : ""}`}
+            aria-label="Main"
+          >
             {navLinks.map((link) => (
               <a
                 key={link.href}
@@ -181,21 +299,16 @@ function App() {
                 {link.label}
               </a>
             ))}
-            <a
-              className="nav-cta-mobile"
-              href="#contact"
-              onClick={() => setMenuOpen(false)}
-            >
-              Let's talk
-            </a>
           </nav>
-          <a className="btn btn-sm btn-primary nav-cta" href="#contact">
-            Let's talk
+          <ThemeToggle theme={theme} onToggle={toggleTheme} />
+          <a className="btn btn-dark btn-sm nav-cta" href={`mailto:${profile.email}`}>
+            Email me
           </a>
           <button
             className={`nav-toggle ${menuOpen ? "is-open" : ""}`}
-            aria-label="Toggle menu"
+            aria-label={menuOpen ? "Close menu" : "Open menu"}
             aria-expanded={menuOpen}
+            aria-controls="site-menu"
             onClick={() => setMenuOpen((v) => !v)}
           >
             <span />
@@ -206,178 +319,121 @@ function App() {
 
       <main id="top">
         <section className="hero">
-          <div className="hero-bg" aria-hidden="true">
-            <div className="hero-grid" />
-            <div className="hero-glow" />
-          </div>
-
-          <div className="container hero-layout">
-            <div className="hero-content">
-              <motion.p
-                className="status-chip"
-                variants={fadeUp}
-                initial="hidden"
-                animate="show"
-                custom={0}
-              >
-                <span className="status-dot" />
-                {profile.role} at {profile.company}
+          <div className="container hero-grid">
+            <div className="hero-text">
+              <motion.p className="hero-status" {...enter(0)}>
+                <span className="status-dot" aria-hidden="true" />
+                {profile.role} at {profile.company}, open to new projects
               </motion.p>
-
-              <motion.h1
-                className="hero-title"
-                variants={fadeUp}
-                initial="hidden"
-                animate="show"
-                custom={1}
-              >
-                Hi, I'm {profile.firstName}. I build products that{" "}
-                <em>ship, scale & sell.</em>
+              <motion.h1 {...enter(1)}>
+                I build and ship full-stack products that real businesses run
+                on.
               </motion.h1>
-
-              <motion.p
-                className="hero-tagline"
-                variants={fadeUp}
-                initial="hidden"
-                animate="show"
-                custom={2}
-              >
+              <motion.p className="hero-intro" {...enter(2)}>
                 {profile.tagline}
               </motion.p>
-
-              <motion.div
-                className="hero-actions"
-                variants={fadeUp}
-                initial="hidden"
-                animate="show"
-                custom={3}
-              >
-                <a className="btn btn-primary" href="#work">
-                  View my work <Icon name="arrow" />
+              <motion.div className="hero-actions" {...enter(3)}>
+                <a className="btn btn-dark" href="#work">
+                  See the work
                 </a>
-                <a className="btn btn-ghost" href={`mailto:${profile.email}`}>
-                  <Icon name="mail" /> Email me
+                <a className="btn btn-line" href={`mailto:${profile.email}`}>
+                  <Icon name="mail" /> {profile.email}
                 </a>
               </motion.div>
-
-              <motion.div
-                className="hero-social"
-                variants={fadeUp}
-                initial="hidden"
-                animate="show"
-                custom={4}
-              >
-                <a
-                  href={profile.github}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="GitHub"
-                >
-                  <Icon name="github" />
-                </a>
-                <a
-                  href={profile.linkedin}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="LinkedIn"
-                >
-                  <Icon name="linkedin" />
-                </a>
-                <span className="hero-social-note">Based in {profile.location}</span>
-              </motion.div>
+              <motion.dl className="facts" {...enter(4)}>
+                {stats.map((s) => (
+                  <div key={s.label}>
+                    <dt>{s.label}</dt>
+                    <dd>{s.value}</dd>
+                  </div>
+                ))}
+              </motion.dl>
             </div>
 
-            <Avatar3D src={avatar3d} alt={`${profile.name} 3D avatar`} />
-          </div>
-
-          <div className="container">
-            <motion.ul
-              className="stats"
-              variants={fadeUp}
-              initial="hidden"
-              animate="show"
-              custom={5}
+            <motion.figure
+              className="portrait"
+              {...(reduceMotion
+                ? {}
+                : {
+                    initial: { opacity: 0, scale: 0.97 },
+                    animate: { opacity: 1, scale: 1 },
+                    transition: { duration: 0.9, ease, delay: 0.15 },
+                  })}
             >
-              {stats.map((s) => (
-                <li key={s.label}>
-                  <strong>{s.value}</strong>
-                  <span>{s.label}</span>
-                </li>
-              ))}
-            </motion.ul>
+              <img
+                src={portrait}
+                alt={`${profile.name}`}
+                width="660"
+                height="825"
+              />
+              <figcaption>
+                {profile.name}
+                <span>Based in {profile.location}</span>
+              </figcaption>
+            </motion.figure>
           </div>
         </section>
 
         <section id="work" className="section">
           <div className="container">
-            <SectionHeading
-              eyebrow="Selected work"
-              title="Products I've designed, built and shipped."
-            >
-              From food ordering to enterprise operations and fashion retail —
-              full-stack builds that run real businesses.
-            </SectionHeading>
+            <div className="section-head">
+              <h2>Selected work</h2>
+              <p>
+                Live products I designed, built and maintain. Every screen below
+                is a real capture of the site in production.
+              </p>
+            </div>
 
-            <div className="featured-grid">
+            <div className="cases">
               {featured.map((project, i) => (
-                <ProjectCard key={project.id} project={project} index={i} large />
+                <CaseStudy key={project.id} project={project} index={i} />
               ))}
             </div>
 
-            <motion.h3 className="subheading" {...reveal}>
-              More projects
-            </motion.h3>
-            <div className="more-grid">
-              {more.map((project, i) => (
-                <ProjectCard key={project.id} project={project} index={i} />
-              ))}
-            </div>
+            {more.length > 0 && (
+              <>
+                <h3 className="subhead">More in production</h3>
+                <div className="cards">
+                  {more.map((project) => (
+                    <ProjectCard key={project.id} project={project} />
+                  ))}
+                </div>
+              </>
+            )}
           </div>
         </section>
 
-        <section id="about" className="section section-alt">
-          <div className="container about-layout">
-            <motion.div
-              className="about-photo"
-              initial={{ opacity: 0, scale: 0.96 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true, amount: 0.3 }}
-              transition={{ duration: 0.7, ease }}
-            >
-              <img src={portrait} alt={`${profile.name}, ${profile.role}`} />
-            </motion.div>
-
-            <div className="about-text">
-              <SectionHeading
-                eyebrow="About"
-                title="Full-stack builder with a growth mindset."
-              />
-              {about.paragraphs.map((text, i) => (
-                <motion.p key={text} className="about-copy" {...reveal} custom={i}>
-                  {text}
-                </motion.p>
+        <section id="about" className="section section-mist">
+          <div className="container about-grid">
+            <div className="section-head">
+              <h2>About</h2>
+            </div>
+            <div className="about-body">
+              {about.paragraphs.map((text) => (
+                <p key={text}>{text}</p>
               ))}
-              <motion.div className="about-edu" {...reveal} custom={2}>
-                <span className="about-edu-label">Education</span>
-                <strong>
-                  {about.education.degree} · {about.education.school}
-                </strong>
-                <span>
-                  {about.education.years} · CGPA {about.education.cgpa}
-                </span>
-              </motion.div>
+              <dl className="skills">
+                {skills.map((group) => (
+                  <div key={group.title}>
+                    <dt>{group.title}</dt>
+                    <dd>{group.items.join(", ")}</dd>
+                  </div>
+                ))}
+              </dl>
             </div>
           </div>
         </section>
 
         <section id="experience" className="section">
-          <div className="container narrow">
-            <SectionHeading eyebrow="Experience" title="Where I've been." />
+          <div className="container about-grid">
+            <div className="section-head">
+              <h2>Experience</h2>
+            </div>
             <ol className="timeline">
-              {experience.map((item, i) => (
-                <motion.li key={item.title} {...reveal} custom={i}>
-                  <span className="timeline-period">{item.period}</span>
-                  <div className="timeline-body">
+              {experience.map((item) => (
+                <li key={item.title}>
+                  <p className="timeline-period">{item.period}</p>
+                  <div>
                     <h3>{item.title}</h3>
                     <p className="timeline-org">{item.org}</p>
                     <ul>
@@ -386,61 +442,35 @@ function App() {
                       ))}
                     </ul>
                   </div>
-                </motion.li>
+                </li>
               ))}
             </ol>
           </div>
         </section>
 
-        <section id="skills" className="section section-alt">
+        <section id="contact" className="section contact">
           <div className="container">
-            <SectionHeading
-              eyebrow="Expertise"
-              title="Full stack, DevOps and growth measurement."
-            />
-            <div className="skills-grid">
-              {skills.map((group, i) => (
-                <motion.div
-                  key={group.title}
-                  className="skill-card"
-                  {...reveal}
-                  custom={i}
-                >
-                  <span className="skill-index">
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                  <h3>{group.title}</h3>
-                  <div className="tags">
-                    {group.items.map((item) => (
-                      <span key={item}>{item}</span>
-                    ))}
-                  </div>
-                </motion.div>
-              ))}
+            <h2>Have a product to build or a team to join? Let's talk.</h2>
+            <p className="contact-copy">
+              Open to full-time roles, freelance product builds and analytics
+              setups.
+            </p>
+            <div className="contact-actions">
+              <a className="btn btn-light" href={`mailto:${profile.email}`}>
+                <Icon name="mail" /> {profile.email}
+              </a>
+              <a className="btn btn-ghost-light" href={`tel:+91${profile.phone}`}>
+                <Icon name="phone" /> +91 {profile.phone}
+              </a>
             </div>
-          </div>
-        </section>
-
-        <section id="contact" className="section">
-          <div className="container">
-            <motion.div className="contact-card" {...reveal}>
-              <p className="eyebrow">Contact</p>
-              <h2>
-                Have a product in mind? <em>Let's build it.</em>
-              </h2>
-              <p className="contact-copy">
-                Open to collaborations, product builds, and conversations about
-                full-stack work and growth analytics.
-              </p>
-              <div className="contact-actions">
-                <a className="btn btn-primary" href={`mailto:${profile.email}`}>
-                  <Icon name="mail" /> {profile.email}
-                </a>
-                <a className="btn btn-ghost" href={`tel:+91${profile.phone}`}>
-                  <Icon name="phone" /> +91 {profile.phone}
-                </a>
-              </div>
-            </motion.div>
+            <div className="contact-social">
+              <a href={profile.linkedin} target="_blank" rel="noopener noreferrer">
+                <Icon name="linkedin" /> LinkedIn
+              </a>
+              <a href={profile.github} target="_blank" rel="noopener noreferrer">
+                <Icon name="github" /> GitHub
+              </a>
+            </div>
           </div>
         </section>
       </main>
@@ -448,16 +478,12 @@ function App() {
       <footer className="footer">
         <div className="container footer-inner">
           <p>
-            © {new Date().getFullYear()} {profile.name}. Built with React.
+            © {new Date().getFullYear()} {profile.name}
           </p>
-          <div className="footer-social">
-            <a href={profile.github} target="_blank" rel="noopener noreferrer">
-              <Icon name="github" /> GitHub
-            </a>
-            <a href={profile.linkedin} target="_blank" rel="noopener noreferrer">
-              <Icon name="linkedin" /> LinkedIn
-            </a>
-          </div>
+          <p>
+            {about.education.degree}, {about.education.school} (
+            {about.education.years}), CGPA {about.education.cgpa}
+          </p>
         </div>
       </footer>
     </div>
